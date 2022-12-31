@@ -1,10 +1,12 @@
 import requests
-from oauth2client.service_account import ServiceAccountCredentials
+import os
 import gspread
-# from flight_search import FlightSearch
+from dotenv import load_dotenv
+from oauth2client.service_account import ServiceAccountCredentials
 
-SHEET_ENDPOINT = "https://api.sheety.co/72166356ac38b8d96bbcee85de172cba/flightDeals/prices"
-BEARER_TOKEN = "lsdkadksjasdfjcmmdfskldvfdsg"
+load_dotenv("api_details.env")
+SHEET_ENDPOINT = os.getenv('SHEET_ENDPOINT')
+BEARER_TOKEN = os.getenv('BEARER_TOKEN')
 NUM = 1
 SCOPE = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file"
          , "https://www.googleapis.com/auth/drive"]

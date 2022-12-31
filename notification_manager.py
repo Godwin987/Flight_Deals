@@ -1,11 +1,14 @@
-from flight_data import FlightData
 import requests
 import smtplib
+import os
+from flight_data import FlightData
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from dotenv import load_dotenv
+load_dotenv("api_details.env")
 
-my_email = "pythonlearncode114@gmail.com"
-password = "ykiivixaeyphfpam"
+my_email = os.getenv('my_email')
+password = os.getenv('password')
 
 
 class NotificationManager(FlightData):
@@ -17,13 +20,18 @@ class NotificationManager(FlightData):
         self.bot_message = ""
 
     def flight_message(self):
+
+        """
+        This function is used to send a telegram message using a telegram bot
+        """
+
         self.bot_message = (
             f"Low price alert!\nonly ₦{self.price} to fly ✈✈ from {self.departure_city}-{self.departure_airport_code}"
             f" to {self.destination_city}-{self.arrival_airport_code}, "
             f"from {self.outbound_date.split('T')[0]} to {self.inbound_date.split('T')[0]}\n.")
 
-        bot_token = '5664737899:AAEZX-t3GHLljycZpueIgcjEycNWEgXKTk4'
-        bot_chatID = '1999930604'
+        bot_token = os.getenv('bot_token')
+        bot_chatID = os.getenv('bot_chatID')
         send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id='\
                     + bot_chatID + '&parse_mode=Markdown&text=' + self.bot_message
         send_link = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id='\
@@ -35,14 +43,19 @@ class NotificationManager(FlightData):
         return response.json()
 
     def stopover_message(self):
+
+        """
+        This function is used to send a telegram message using a telegram bot for flights with stopovers
+        """
+
         self.bot_message = (
             f"Low price alert!\nonly ₦{self.price} to fly ✈✈ from {self.departure_city}-{self.departure_airport_code}"
             f" to {self.destination_city}-{self.arrival_airport_code}, "
             f"from {self.outbound_date.split('T')[0]} to {self.inbound_date.split('T')[0]}. "
             f"Flight has {self.stopover} stop overs,via {self.via_city}\n")
 
-        bot_token = '5664737899:AAEZX-t3GHLljycZpueIgcjEycNWEgXKTk4'
-        bot_chatID = '1999930604'
+        bot_token = os.getenv('bot_token')
+        bot_chatID = os.getenv('bot_chatID')
         send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + \
                     '&parse_mode=Markdown&text=' + self.bot_message
         send_link = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' \
@@ -54,6 +67,11 @@ class NotificationManager(FlightData):
         return response.json()
 
     def send_emails(self, users):
+
+        """
+        This function is used to send emails.
+        """
+
         from_adr = my_email
         to_adr = users
 
@@ -87,29 +105,3 @@ class NotificationManager(FlightData):
     def print(self):
         print(self.deep_link)
 
-        # from_adr = "pythontutorial40@gmail.com"
-        # to_adr = my_email
-        #
-        # msg = MIMEMultipart('alternative')
-        # msg['Subject'] = "Low Price Flight Alert!"
-        # msg['From'] = from_adr
-        # msg['To'] = to_adr
-        #
-        # html = f"""
-        # <html>
-        # <head></head>
-        #   <body>
-        #     <p>Link:</p>
-        #     <a href="{self.deep_link}">FLight Here</a>
-        #   </body>
-        # </html>
-        # """
-        #
-        # part1 = MIMEText(html, 'html')
-        # part2 = MIMEText(f"{self.bot_message}")
-        #
-        # msg.attach(part1)
-        # msg.attach(part2)
-        #
-        # s = smtplib.SMTP('localhost')
-        # s.sendmail(from_adr, to_adr, msg.as_string())
